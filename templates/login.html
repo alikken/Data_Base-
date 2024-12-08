@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+
+{% block content %}
+<style>
+    .auth-container {
+        background-color: #f8f9fa; /* Светло-серый фон */
+        border-radius: 15px; /* Закругленные границы */
+        padding: 30px; /* Отступы внутри */
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Тень для объема */
+        max-width: 400px; /* Максимальная ширина контейнера */
+        margin: 0 auto; /* Центрирование по горизонтали */
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+    }
+  </style>
+  
+  <div class="auth-container">
+      <h1 class="text-center">Авторизация</h1>
+      <form method="post">
+          {% csrf_token %}
+          <div class="mb-3">
+              {{ form.username.label_tag }}
+              {{ form.username }}
+          </div>
+          <div class="mb-3">
+              {{ form.password.label_tag }}
+              {{ form.password }}
+          </div>
+          <button type="submit" class="btn btn-primary w-100">Войти</button>
+      </form>
+  </div>
+  
+
+{% endblock %}

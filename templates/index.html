@@ -1,0 +1,196 @@
+{% extends "base.html" %}
+
+{% block content %}
+<!-- Таблицы -->
+<!-- Таблица: Инвентарная карточка -->
+<div id="inventoryCardTable" class="model-table" style="display: block;">
+    <h3 style="text-align: center;">Инвентарная карточка</h3>
+
+    <table class="table table-bordered">
+        <thead>
+            <tr>
+                <th>Номер карточки</th>
+                <th>Код оборудования</th>
+                <th>Признак комплектности</th>
+                <th>Код категории оборудования</th>
+                <th>Первоначальная стоимость</th>
+                <th>Общая сумма амортизаций</th>
+                <th>Дата выпуска оборудования</th>
+                <th>Дата ввода в эксплуатацию</th>
+                <th>Код подразделения</th>
+                <th>Код работника</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for card in inventory_cards %}
+            <tr>
+                <td>{{ card.card_number }}</td>
+                <td>{{ card.equipment_code }}</td>
+                <td>{{ card.completeness_sign }}</td>
+                <td>{{ card.category_code }}</td>
+                <td>{{ card.initial_cost }}</td>
+                <td>{{ card.total_depreciation_amount }}</td>
+                <td>{{ card.release_date }}</td>
+                <td>{{ card.commissioning_date }}</td>
+                <td>{{ card.department_code }}</td>
+                <td>{{ card.employee_code }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+<!-- Таблица: Подразделения -->
+<div id="departmentTable" class="model-table" style="display: none;">
+    <h3 style="text-align: center;">Подразделения</h3>
+    <table class="table table-bordered">
+        <thead>
+            <tr>
+                <th>Код подразделения</th>
+                <th>Наименование</th>
+                <th>Код работника руководителя</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for dep in departments %}
+            <tr>
+                <td>{{ dep.department_code }}</td>
+                <td>{{ dep.name }}</td>
+                <td>{{ dep.manager_code }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+<!-- Таблица: Начисления -->
+<div id="accrualTable" class="model-table" style="display: none;">
+    <h3 style="text-align: center;">Начисления</h3>
+    <table class="table table-bordered">
+        <thead>
+            <tr>
+                <th>Номер карточки</th>
+                <th>Сумма начислений</th>
+                <th>Месяц</th>
+                <th>Год</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for accrual in accruals %}
+            <tr>
+                <td>{{ accrual.card_number.card_number }}</td>
+                <td>{{ accrual.amount }}</td>
+                <td>{{ accrual.month }}</td>
+                <td>{{ accrual.year }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+<!-- Таблица: Оборудование -->
+<div id="equipmentTable" class="model-table" style="display: none;">
+    <h3 style="text-align: center;">Оборудование</h3>
+    <table class="table table-bordered">
+        <thead>
+            <tr>
+                <th>Код оборудования</th>
+                <th>Наименование</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for eq in equipment %}
+            <tr>
+                <td>{{ eq.equipment_code }}</td>
+                <td>{{ eq.name }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+<!-- Таблица: Категории оборудования -->
+<div id="equipmentCategoryTable" class="model-table" style="display: none;">
+    <h3 style="text-align: center;">Категории оборудования</h3>
+    <table class="table table-bordered">
+        <thead>
+            <tr>
+                <th>Код категории оборудования</th>
+                <th>Наименование</th>
+                <th>Процент амортизационных отчислений</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for cat in equipment_categories %}
+            <tr>
+                <td>{{ cat.category_code }}</td>
+                <td>{{ cat.name }}</td>
+                <td>{{ cat.depreciation_rate }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+<!-- Таблица: Работники -->
+<div id="employeeTable" class="model-table" style="display: none;">
+    <h3 style="text-align: center;">Работники</h3>
+    <table class="table table-bordered">
+        <thead>
+            <tr>
+                <th>Код работника</th>
+                <th>ФИО</th>
+                <th>Код подразделения</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for emp in employees %}
+            <tr>
+                <td>{{ emp.employee_code }}</td>
+                <td>{{ emp.full_name }}</td>
+                <td>{{ emp.department_code.department_code }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+<!-- Таблица: Комплектность -->
+<div id="completenessTable" class="model-table" style="display: none;">
+    <h3 style="text-align: center;">Комплектность</h3>
+    <table class="table table-bordered">
+        <thead>
+            <tr>
+                <th>Номер карточки</th>
+                <th>Номер позиции</th>
+                <th>Наименование</th>
+                <th>Количество</th>
+                <th>Примечание</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for comp in completeness %}
+            <tr>
+                <td>{{ comp.card_number.card_number }}</td>
+                <td>{{ comp.position_number }}</td>
+                <td>{{ comp.name }}</td>
+                <td>{{ comp.quantity }}</td>
+                <td>{{ comp.note }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+<script>
+    function showTable(tableId) {
+        const tables = document.querySelectorAll('.model-table');
+        tables.forEach(table => table.style.display = 'none');
+        const selectedTable = document.getElementById(tableId);
+        if (selectedTable) {
+            selectedTable.style.display = 'block';
+        }
+    }
+</script>
+
+{% endblock %}

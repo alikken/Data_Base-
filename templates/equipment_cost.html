@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+{% load custom_filters %}
+
+
+{% block content %}
+<h3>Первоначальная стоимость оборудования по участкам</h3>
+<table class="table">
+    <thead>
+        <tr>
+            <th>Код участка</th>
+            <th>Общая стоимость</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for row in result %}
+        <tr>
+            <td>{{ row.department_code }}</td>
+            <td>{{ row.total_cost }}</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+{% endblock %}
