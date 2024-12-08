@@ -1,6 +1,6 @@
 from django.db import models
 import uuid
-
+from datetime import datetime
 class EquipmentCategory(models.Model):
     """Категория оборудования"""
 
@@ -218,14 +218,22 @@ class Accrual(models.Model):
 
     card_number = models.ForeignKey(InventoryCard, on_delete=models.CASCADE, verbose_name="Номер карточки", related_name="accruals")
     amount = models.FloatField(default=0, verbose_name="Сумма начислений")
-    month = models.PositiveIntegerField(verbose_name="Месяц")
-    year = models.PositiveIntegerField(verbose_name="Год")
+    month = models.PositiveIntegerField(verbose_name="Месяц", blank=True)
+    year = models.PositiveIntegerField(verbose_name="Год", blank=True)
 
     class Meta:
         verbose_name = "Начисление"
         verbose_name_plural = "Начисления"
         db_table = "accrual"
         unique_together = ("card_number", "month", "year")
+
+    def save(self, *args, **kwargs):
+        # Устанавливаем текущий месяц и год, если они не заданы
+        if not self.month:
+            self.month = datetime.now().month
+        if not self.year:
+            self.year = datetime.now().year
+        super().save(*args, **kwargs)
 
     def __str__(self):
         return f"{self.card_number} - {self.month}/{self.year} - {self.amount}"
