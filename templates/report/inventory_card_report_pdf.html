@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            font-size: 12px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+        }
+        table, th, td {
+            border: 1px solid black;
+        }
+        th, td {
+            padding: 8px;
+            text-align: left;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+    </style>
+</head>
+<body>
+    <h2 style="text-align: center;">Отчет: Инвентарная карточка</h2>
+    {% if start_date and end_date %}
+    <p>Период: {{ start_date }} - {{ end_date }}</p>
+    {% endif %}
+    <table>
+        <thead>
+            <tr>
+                <th>Номер карточки</th>
+                <th>Код оборудования</th>
+                <th>Признак комплектности</th>
+                <th>Код категории оборудования</th>
+                <th>Первоначальная стоимость</th>
+                <th>Дата ввода в эксплуатацию</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for card in inventory_cards %}
+            <tr>
+                <td>{{ card.card_number }}</td>
+                <td>{{ card.equipment_code }}</td>
+                <td>{{ card.completeness_sign }}</td>
+                <td>{{ card.category_code }}</td>
+                <td>{{ card.initial_cost }}</td>
+                <td>{{ card.commissioning_date }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</body>
+</html>

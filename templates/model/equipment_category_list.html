@@ -1,0 +1,28 @@
+{% comment %} {% extends "base.html" %} {% endcomment %}
+
+{% block content %}
+<h1>Категории оборудования</h1>
+
+<table class="table table-bordered">
+    <thead>
+        <tr>
+            <th>Код категории</th>
+            <th>Наименование</th>
+            <th>Процент амортизационных отчислений</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for cat in equipment_categories %}
+        <tr>
+            <td>{{ cat.category_code }}</td>
+            <td>{{ cat.name }}</td>
+            <td>{{ cat.depreciation_rate }}</td>
+        </tr>
+        {% empty %}
+        <tr>
+            <td colspan="3">Нет данных для отображения</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endblock %}

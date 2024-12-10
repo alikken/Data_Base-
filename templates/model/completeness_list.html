@@ -1,0 +1,32 @@
+{% comment %} {% extends "base.html" %} {% endcomment %}
+
+{% block content %}
+<h1>Комплектность</h1>
+
+<table class="table table-bordered">
+    <thead>
+        <tr>
+            <th>Номер карточки</th>
+            <th>Номер позиции</th>
+            <th>Наименование</th>
+            <th>Количество</th>
+            <th>Примечание</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for comp in completeness %}
+        <tr>
+            <td>{{ comp.card_number }}</td>
+            <td>{{ comp.position_number }}</td>
+            <td>{{ comp.name }}</td>
+            <td>{{ comp.quantity }}</td>
+            <td>{{ comp.note }}</td>
+        </tr>
+        {% empty %}
+        <tr>
+            <td colspan="5">Нет данных для отображения</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endblock %}

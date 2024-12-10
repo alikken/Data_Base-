@@ -20,43 +20,45 @@
 <div class="d-flex">
   <!-- Боковая панель -->
   <div class="sidebar bg-light p-3" style="width: 250px; min-height: 100vh; border-right: 1px solid #ddd;">
-      <h4 class="text-center mb-4">Навигация</h4>
-      
-      <!-- Таблицы -->
-      <div class="nav flex-column">
-          <button class="btn btn-outline-primary mb-2 w-100" onclick="showTable('inventoryCardTable')">Инвентарная карточка</button>
-          <button class="btn btn-outline-primary mb-2 w-100" onclick="showTable('completenessTable')">Комплектность</button>
-          <button class="btn btn-outline-primary mb-2 w-100" onclick="showTable('departmentTable')">Подразделения</button>
-          <button class="btn btn-outline-primary mb-2 w-100" onclick="showTable('accrualTable')">Начисления</button>
-          <button class="btn btn-outline-primary mb-2 w-100" onclick="showTable('equipmentTable')">Оборудование</button>
-          <button class="btn btn-outline-primary mb-2 w-100" onclick="showTable('equipmentCategoryTable')">Категории оборудования</button>
-          <button class="btn btn-outline-primary mb-2 w-100" onclick="showTable('employeeTable')">Работники</button>
-      </div>
+    <h4 class="text-center mb-4">Навигация</h4>
+    
+    <!-- Таблицы -->
+    <div class="nav flex-column">
+        <a href="{% url 'inventory_card_list' %}" class="btn btn-outline-primary mb-2 w-100">Инвентарная карточка</a>
+        <a href="{% url 'completeness_list' %}" class="btn btn-outline-primary mb-2 w-100">Комплектность</a>
+        <a href="{% url 'department_list' %}" class="btn btn-outline-primary mb-2 w-100">Подразделения</a>
+        <a href="{% url 'accrual_list' %}" class="btn btn-outline-primary mb-2 w-100">Начисления</a>
+        <a href="{% url 'equipment_list' %}" class="btn btn-outline-primary mb-2 w-100">Оборудование</a>
+        <a href="{% url 'equipment_category_list' %}" class="btn btn-outline-primary mb-2 w-100">Категории оборудования</a>
+        <a href="{% url 'employee_list' %}" class="btn btn-outline-primary mb-2 w-100">Работники</a>
+    </div>
   </div>
 
+
   <div class="container" style="background-color: white; padding: 20px; border-radius: 10px;">
-      <header class="d-flex flex-wrap justify-content-center py-3 mb-4 border-bottom header-gray">
-        <a href="{% url 'model_tables' %}" class="d-flex align-items-center mb-3 mb-md-0 me-md-auto link-body-emphasis text-decoration-none">
+    <header class="d-flex flex-wrap justify-content-center py-3 mb-4 border-bottom header-gray">
+      <a href="{% url 'inventory_card_list' %}" class="d-flex align-items-center mb-3 mb-md-0 me-md-auto link-body-emphasis text-decoration-none">
           <span class="fs-4">Учет материальных ресурсов</span>
-        </a>
-      
-        <ul class="nav nav-pills">
+      </a>
+  
+      <ul class="nav nav-pills">
           <li class="nav-item dropdown">
               <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                   Таблицы
               </a>
               <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-                <li><a class="dropdown-item" href="#" onclick="showTable('inventoryCardTable')">Инвентарная карточка</a></li>
-                <li><a class="dropdown-item" href="#" onclick="showTable('completenessTable')">Комплектность</a></li>
-                <li><a class="dropdown-item" href="#" onclick="showTable('departmentTable')">Подразделения</a></li>
-                <li><a class="dropdown-item" href="#" onclick="showTable('accrualTable')">Начисления</a></li>
-                <li><a class="dropdown-item" href="#" onclick="showTable('equipmentTable')">Оборудование</a></li>
-                <li><a class="dropdown-item" href="#" onclick="showTable('equipmentCategoryTable')">Категории оборудования</a></li>
-                <li><a class="dropdown-item" href="#" onclick="showTable('employeeTable')">Работники</a></li>
-            </ul>
+                  <li><a class="dropdown-item" href="{% url 'inventory_card_list' %}">Инвентарная карточка</a></li>
+                  <li><a class="dropdown-item" href="{% url 'completeness_list' %}">Комплектность</a></li>
+                  <li><a class="dropdown-item" href="{% url 'department_list' %}">Подразделения</a></li>
+                  <li><a class="dropdown-item" href="{% url 'accrual_list' %}">Начисления</a></li>
+                  <li><a class="dropdown-item" href="{% url 'equipment_list' %}">Оборудование</a></li>
+                  <li><a class="dropdown-item" href="{% url 'equipment_category_list' %}">Категории оборудования</a></li>
+                  <li><a class="dropdown-item" href="{% url 'employee_list' %}">Работники</a></li>
+              </ul>
           </li>
-        </ul>
-      </header>
+      </ul>
+    </header>
+  
         {% block content %}
 
         {% endblock %}

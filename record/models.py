@@ -1,10 +1,11 @@
 from django.db import models
 import uuid
 from datetime import datetime
+
 class EquipmentCategory(models.Model):
     """Категория оборудования"""
 
-    category_code = models.CharField(max_length=10, primary_key=True, verbose_name="Код категории оборудования", editable=True)
+    category_code = models.CharField(max_length=10, primary_key=True, verbose_name="Код категории оборудования", editable=True, blank=True)
     name = models.CharField(max_length=50, verbose_name="Наименование")
     depreciation_rate = models.FloatField(verbose_name="Процент амортизационных отчислений")
 
@@ -27,10 +28,11 @@ class Equipment(models.Model):
     """Оборудование"""
 
     equipment_code = models.CharField(
-        max_length=10, 
+        max_length=30, 
         primary_key=True, 
         verbose_name="Код оборудования", 
-        editable=True
+        editable=True,
+        blank=True
     )
     name = models.CharField(max_length=50, verbose_name="Наименование")
 
@@ -69,7 +71,8 @@ class Department(models.Model):
         max_length=10, 
         primary_key=True, 
         verbose_name="Код подразделения", 
-        editable=True
+        editable=True,
+        blank=True
     )
     name = models.CharField(max_length=50, verbose_name="Наименование")
     manager_code = models.ForeignKey(
@@ -132,14 +135,21 @@ class Employee(models.Model):
 class InventoryCard(models.Model):
     """Инвентарная карточка"""
 
+    COMPLETENESS_CHOICES = [
+        ('Полная комплектация', 'Полная комплектация'),
+        ('Частичная комплектация', 'Частичная комплектация'),
+        ('Неполная комплектация', 'Неполная комплектация'),
+    ]
+
     card_number = models.CharField(
         max_length=10, 
         primary_key=True, 
         verbose_name="Номер карточки", 
-        editable=True
+        editable=True,
+        blank=True
     )
     equipment_code = models.ForeignKey(Equipment, on_delete=models.CASCADE, verbose_name="Код оборудования")
-    completeness_sign = models.CharField(max_length=15, verbose_name="Признак комплектности")
+    completeness_sign = models.CharField(max_length=30, verbose_name="Признак комплектности", choices=COMPLETENESS_CHOICES)
     category_code = models.ForeignKey(EquipmentCategory, on_delete=models.CASCADE, verbose_name="Код категории оборудования")
     initial_cost = models.FloatField(verbose_name="Первоначальная стоимость")
     total_depreciation_amount = models.FloatField(verbose_name="Общая сумма амортизаций")
@@ -182,9 +192,10 @@ class Completeness(models.Model):
         related_name="completeness"
     )
     position_number = models.CharField(
-        max_length=10, 
+        max_length=20, 
         verbose_name="Номер позиции", 
-        editable=True
+        editable=True,
+        blank=True
     )
     name = models.CharField(max_length=50, verbose_name="Наименование")
     quantity = models.PositiveIntegerField(verbose_name="Количество")

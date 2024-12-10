@@ -24,3 +24,8 @@ db.sqlite3
 .idea/
 *.bak
 *.swp
+
+
+wkhtmltox
+/wkhtmltox
+.wkhtmltox

@@ -1,0 +1,28 @@
+{% comment %} {% extends "base.html" %} {% endcomment %}
+
+{% block content %}
+<h1>Работники</h1>
+
+<table class="table table-bordered">
+    <thead>
+        <tr>
+            <th>Код работника</th>
+            <th>ФИО</th>
+            <th>Код подразделения</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for emp in employees %}
+        <tr>
+            <td>{{ emp.employee_code }}</td>
+            <td>{{ emp.full_name }}</td>
+            <td>{{ emp.department_code }}</td>
+        </tr>
+        {% empty %}
+        <tr>
+            <td colspan="3">Нет данных для отображения</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endblock %}
