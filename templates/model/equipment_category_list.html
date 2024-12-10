@@ -1,28 +1,56 @@
-{% comment %} {% extends "base.html" %} {% endcomment %}
+{% extends "base.html" %}
 
 {% block content %}
-<h1>Категории оборудования</h1>
+<h1 class="text-center">Категории оборудования</h1>
 
-<table class="table table-bordered">
-    <thead>
-        <tr>
-            <th>Код категории</th>
-            <th>Наименование</th>
-            <th>Процент амортизационных отчислений</th>
-        </tr>
-    </thead>
-    <tbody>
-        {% for cat in equipment_categories %}
-        <tr>
-            <td>{{ cat.category_code }}</td>
-            <td>{{ cat.name }}</td>
-            <td>{{ cat.depreciation_rate }}</td>
-        </tr>
-        {% empty %}
-        <tr>
-            <td colspan="3">Нет данных для отображения</td>
-        </tr>
-        {% endfor %}
-    </tbody>
-</table>
+<div class="table-responsive">
+    <table class="table table-striped table-hover">
+        <thead class="table-dark">
+            <tr>
+                <th scope="col">Код категории</th>
+                <th scope="col">Наименование</th>
+                <th scope="col">Процент амортизации</th>
+                <th scope="col">Действия</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for cat in equipment_categories %}
+            <tr>
+                <td>{{ cat.category_code }}</td>
+                <td>{{ cat.name }}</td>
+                <td>{{ cat.depreciation_rate }}</td>
+                <td>
+                    <div class="d-flex justify-content-center">
+                        <a href="{% url 'equipment_category_edit' cat.pk %}" class="btn btn-sm btn-warning me-2">Редактировать</a>
+                        <a href="{% url 'equipment_category_confirm_delete' cat.pk %}" class="btn btn-sm btn-danger">Удалить</a>
+                    </div>
+                </td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="4" class="text-center">Нет данных для отображения</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+<div class="d-flex justify-content-end mb-3">
+    <a href="{% url 'equipment_category_add' %}" class="btn btn-sm btn-light">Добавить</a>
+</div>
+<style>
+    .table {
+        border: 1px solid #ddd;
+    }
+    .table th, .table td {
+        text-align: center;
+        vertical-align: middle;
+    }
+    .table-hover tbody tr:hover {
+        background-color: #f8f9fa;
+    }
+    .btn-light {
+        color: #000;
+        border: 1px solid #ddd;
+    }
+</style>
 {% endblock %}

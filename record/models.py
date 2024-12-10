@@ -1,12 +1,13 @@
+import random
 from django.db import models
-import uuid
 from datetime import datetime
+import uuid
 
 class EquipmentCategory(models.Model):
     """Категория оборудования"""
 
-    category_code = models.CharField(max_length=10, primary_key=True, verbose_name="Код категории оборудования", editable=True, blank=True)
-    name = models.CharField(max_length=50, verbose_name="Наименование")
+    category_code = models.CharField(max_length=10, primary_key=True, verbose_name="Код категории оборудования", editable=False, blank=True)
+    name = models.CharField(max_length=256, verbose_name="Наименование")
     depreciation_rate = models.FloatField(verbose_name="Процент амортизационных отчислений")
 
     class Meta:
@@ -16,25 +17,29 @@ class EquipmentCategory(models.Model):
 
     def save(self, *args, **kwargs):
         if not self.category_code:
-            # Генерация уникального кода (первые 8 символов UUID)
-            self.category_code = str(uuid.uuid4())[:8].upper()
+            # Генерация уникального 10-значного кода
+            while True:
+                new_code = ''.join([str(random.randint(0, 9)) for _ in range(10)])
+                if not EquipmentCategory.objects.filter(category_code=new_code).exists():
+                    self.category_code = new_code
+                    break
         super().save(*args, **kwargs)
 
     def __str__(self):
-        return f"{self.category_code} - {self.name}"
+        return self.category_code
 
 
 class Equipment(models.Model):
     """Оборудование"""
 
     equipment_code = models.CharField(
-        max_length=30, 
+        max_length=10, 
         primary_key=True, 
         verbose_name="Код оборудования", 
-        editable=True,
+        editable=False,
         blank=True
     )
-    name = models.CharField(max_length=50, verbose_name="Наименование")
+    name = models.CharField(max_length=256, verbose_name="Наименование")
 
     class Meta:
         verbose_name = "Оборудование"
@@ -43,26 +48,16 @@ class Equipment(models.Model):
 
     def save(self, *args, **kwargs):
         if not self.equipment_code:
-            # Генерация уникального кода (первые 8 символов UUID)
-            self.equipment_code = str(uuid.uuid4())[:8].upper()
+            # Генерация уникального 10-значного кода
+            while True:
+                new_code = ''.join([str(random.randint(0, 9)) for _ in range(10)])
+                if not Equipment.objects.filter(equipment_code=new_code).exists():
+                    self.equipment_code = new_code
+                    break
         super().save(*args, **kwargs)
 
     def __str__(self):
-        return f"{self.equipment_code} - {self.name}"
-
-
-class Boss(models.Model):
-    """Код руководителя работников"""
-    full_name = models.CharField(max_length=50, verbose_name="ФИО")
-
-    class Meta:
-        verbose_name = "Руководитель подразделения"
-        verbose_name_plural = "Руководители подразделений"
-        db_table = "manager"
-
-    def __str__(self):
-        return self.full_name
-
+        return self.equipment_code
 
 class Department(models.Model):
     """Подразделения"""
@@ -71,12 +66,13 @@ class Department(models.Model):
         max_length=10, 
         primary_key=True, 
         verbose_name="Код подразделения", 
-        editable=True,
+        editable=False,
         blank=True
     )
-    name = models.CharField(max_length=50, verbose_name="Наименование")
+    name = models.CharField(max_length=256, verbose_name="Наименование")
+    # По сути связи здесь не должно быть, надо подумать над кодом
     manager_code = models.ForeignKey(
-        'Boss', 
+        'Employee', # добавить еще модель с руководителями
         on_delete=models.SET_NULL, 
         null=True, 
         blank=True, 
@@ -91,12 +87,16 @@ class Department(models.Model):
 
     def save(self, *args, **kwargs):
         if not self.department_code:
-            # Генерация уникального кода (первые 8 символов UUID)
-            self.department_code = str(uuid.uuid4())[:8].upper()
+            # Генерация уникального 10-значного кода
+            while True:
+                new_code = ''.join([str(random.randint(0, 9)) for _ in range(10)])
+                if not Department.objects.filter(department_code=new_code).exists():
+                    self.department_code = new_code
+                    break
         super().save(*args, **kwargs)
 
     def __str__(self):
-        return f"{self.department_code} - {self.name}"
+        return self.department_code
 
 
 class Employee(models.Model):
@@ -106,11 +106,11 @@ class Employee(models.Model):
         max_length=10, 
         primary_key=True, 
         verbose_name="Код работника", 
-        editable=True,
+        editable=False,
         blank=True,
-        # null=True
+        
     )
-    full_name = models.CharField(max_length=100, verbose_name="ФИО")
+    full_name = models.CharField(max_length=256, verbose_name="ФИО")
     department_code = models.ForeignKey(
         Department, 
         on_delete=models.CASCADE, 
@@ -125,12 +125,16 @@ class Employee(models.Model):
 
     def save(self, *args, **kwargs):
         if not self.employee_code:
-            # Генерация уникального кода (первые 8 символов UUID)
-            self.employee_code = str(uuid.uuid4())[:8].upper()
+            # Генерация уникального 10-значного кода
+            while True:
+                new_code = ''.join([str(random.randint(0, 9)) for _ in range(10)])
+                if not Employee.objects.filter(employee_code=new_code).exists():
+                    self.employee_code = new_code
+                    break
         super().save(*args, **kwargs)
 
     def __str__(self):
-        return f"Card {self.employee_code} - {self.full_name}"
+        return self.employee_code
 
 class InventoryCard(models.Model):
     """Инвентарная карточка"""
@@ -145,11 +149,12 @@ class InventoryCard(models.Model):
         max_length=10, 
         primary_key=True, 
         verbose_name="Номер карточки", 
-        editable=True,
-        blank=True
+        editable=False,
+        blank=True,
+        
     )
     equipment_code = models.ForeignKey(Equipment, on_delete=models.CASCADE, verbose_name="Код оборудования")
-    completeness_sign = models.CharField(max_length=30, verbose_name="Признак комплектности", choices=COMPLETENESS_CHOICES)
+    completeness_sign = models.CharField(max_length=50, verbose_name="Признак комплектности", choices=COMPLETENESS_CHOICES)
     category_code = models.ForeignKey(EquipmentCategory, on_delete=models.CASCADE, verbose_name="Код категории оборудования")
     initial_cost = models.FloatField(verbose_name="Первоначальная стоимость")
     total_depreciation_amount = models.FloatField(verbose_name="Общая сумма амортизаций")
@@ -175,12 +180,10 @@ class InventoryCard(models.Model):
             self.card_number = f"{next_number:04}"
         super().save(*args, **kwargs)
 
+
     def __str__(self):
-        return f"Card {self.card_number} - {self.equipment_code}"
+        return self.card_number
 
-
-
-from django.db import models
 
 class Completeness(models.Model):
     """Комплектность"""
@@ -192,14 +195,14 @@ class Completeness(models.Model):
         related_name="completeness"
     )
     position_number = models.CharField(
-        max_length=20, 
+        max_length=10, 
         verbose_name="Номер позиции", 
-        editable=True,
+        editable=False,
         blank=True
     )
-    name = models.CharField(max_length=50, verbose_name="Наименование")
+    name = models.CharField(max_length=256, verbose_name="Наименование")
     quantity = models.PositiveIntegerField(verbose_name="Количество")
-    note = models.CharField(max_length=100, verbose_name="Примечание")
+    note = models.TextField(verbose_name="Примечание")
 
     class Meta:
         verbose_name = "Комплектность"
@@ -209,28 +212,46 @@ class Completeness(models.Model):
 
     def save(self, *args, **kwargs):
         if not self.position_number:
-            # Определение следующего номера позиции для конкретной карточки
+            # Определяем последний номер позиции для данной карточки
             last_position = Completeness.objects.filter(card_number=self.card_number).order_by('-position_number').first()
             if last_position and last_position.position_number.isdigit():
                 next_position = int(last_position.position_number) + 1
             else:
                 next_position = 1
-            # Форматирование номера в виде 001, 002 и т.д.
+            # Форматируем номер позиции в виде 001, 002, ...
             self.position_number = f"{next_position:03}"
         super().save(*args, **kwargs)
 
     def __str__(self):
-        return f"{self.card_number} - {self.position_number} - {self.name}"
+        return self.position_number
 
 
 
 class Accrual(models.Model):
     """Начисления"""
 
+    MONTH_CHOICES = [
+        (1, "Январь"),
+        (2, "Февраль"),
+        (3, "Март"),
+        (4, "Апрель"),
+        (5, "Май"),
+        (6, "Июнь"),
+        (7, "Июль"),
+        (8, "Август"),
+        (9, "Сентябрь"),
+        (10, "Октябрь"),
+        (11, "Ноябрь"),
+        (12, "Декабрь"),
+    ]
+
+    CURRENT_YEAR = datetime.now().year
+    YEAR_CHOICES = [(year, str(year)) for year in range(CURRENT_YEAR - 10, CURRENT_YEAR + 1)]
+
     card_number = models.ForeignKey(InventoryCard, on_delete=models.CASCADE, verbose_name="Номер карточки", related_name="accruals")
     amount = models.FloatField(default=0, verbose_name="Сумма начислений")
-    month = models.PositiveIntegerField(verbose_name="Месяц", blank=True)
-    year = models.PositiveIntegerField(verbose_name="Год", blank=True)
+    month = models.PositiveIntegerField(choices=MONTH_CHOICES, verbose_name="Месяц", blank=True)
+    year = models.PositiveIntegerField(choices=YEAR_CHOICES, verbose_name="Год", blank=True)
 
     class Meta:
         verbose_name = "Начисление"
@@ -238,13 +259,7 @@ class Accrual(models.Model):
         db_table = "accrual"
         unique_together = ("card_number", "month", "year")
 
-    def save(self, *args, **kwargs):
-        # Устанавливаем текущий месяц и год, если они не заданы
-        if not self.month:
-            self.month = datetime.now().month
-        if not self.year:
-            self.year = datetime.now().year
-        super().save(*args, **kwargs)
 
     def __str__(self):
-        return f"{self.card_number} - {self.month}/{self.year} - {self.amount}"
+        return f"{self.month}/{self.year}"
+

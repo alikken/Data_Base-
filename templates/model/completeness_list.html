@@ -1,32 +1,85 @@
-{% comment %} {% extends "base.html" %} {% endcomment %}
+{% extends "base.html" %}
 
 {% block content %}
-<h1>Комплектность</h1>
+<h1 class="text-center">Комплектность</h1>
 
-<table class="table table-bordered">
-    <thead>
-        <tr>
-            <th>Номер карточки</th>
-            <th>Номер позиции</th>
-            <th>Наименование</th>
-            <th>Количество</th>
-            <th>Примечание</th>
-        </tr>
-    </thead>
-    <tbody>
-        {% for comp in completeness %}
-        <tr>
-            <td>{{ comp.card_number }}</td>
-            <td>{{ comp.position_number }}</td>
-            <td>{{ comp.name }}</td>
-            <td>{{ comp.quantity }}</td>
-            <td>{{ comp.note }}</td>
-        </tr>
-        {% empty %}
-        <tr>
-            <td colspan="5">Нет данных для отображения</td>
-        </tr>
-        {% endfor %}
-    </tbody>
-</table>
+<form method="get" class="mb-4">
+    <div class="row g-3">
+        <!-- Фильтр по наименованию -->
+        <div class="col-md-6">
+            <label for="name" class="form-label">Наименование:</label>
+            <select name="name" id="name" class="form-select">
+                <option value="">Все</option>
+                {% for name in name_choices %}
+                <option value="{{ name }}" {% if request.GET.name == name %}selected{% endif %}>
+                    {{ name }}
+                </option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <!-- Кнопки -->
+        <div class="col-md-6 d-flex align-items-end">
+            <button type="submit" class="btn btn-primary me-2">Применить фильтр</button>
+            <a href="{% url 'completeness_list' %}" class="btn btn-secondary">Сбросить фильтр</a>
+        </div>
+    </div>
+</form>
+
+<div class="table-responsive">
+    <table class="table table-striped table-hover">
+        <thead class="table-dark">
+            <tr>
+                <th scope="col">Номер карточки</th>
+                <th scope="col">Номер позиции</th>
+                <th scope="col">Наименование</th>
+                <th scope="col">Количество</th>
+                <th scope="col">Примечание</th>
+                <th scope="col">Действия</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for comp in completeness %}
+            <tr>
+                <td>{{ comp.card_number }}</td>
+                <td>{{ comp.position_number }}</td>
+                <td>{{ comp.name }}</td>
+                <td>{{ comp.quantity }}</td>
+                <td>{{ comp.note }}</td>
+                <td>
+                    <div class="d-flex justify-content-between">
+                        <a href="{% url 'completeness_edit' comp.pk %}" class="btn btn-sm btn-warning me-2">Редактировать</a>
+                        <a href="{% url 'completeness_delete' comp.pk %}" class="btn btn-sm btn-danger">Удалить</a>
+                    </div>
+                </td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="6" class="text-center">Нет данных для отображения</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+<div class="d-flex justify-content-end mt-3">
+    <a href="{% url 'completeness_add' %}" class="btn btn-sm btn-light">Добавить</a>
+</div>
+
+<style>
+    .table {
+        border: 1px solid #ddd;
+    }
+    .table th, .table td {
+        text-align: center;
+        vertical-align: middle;
+    }
+    .table-hover tbody tr:hover {
+        background-color: #f8f9fa;
+    }
+    .btn-light {
+        color: #000;
+        border: 1px solid #ddd;
+    }
+</style>
 {% endblock %}

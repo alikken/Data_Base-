@@ -8,6 +8,7 @@ from .models import (
 )
 from django.db.models import Q
 
+
 def login_view(request):
     if request.method == 'POST':
         form = LoginForm(request.POST)
@@ -17,13 +18,14 @@ def login_view(request):
             user = authenticate(request, username=username, password=password)
             if user is not None:
                 login(request, user)
-                return redirect('model_tables')
+                return redirect('inventory_card_list')  # Редирект на список инвентарных карточек
             else:
                 form.add_error(None, "Неверный логин или пароль")
     else:
         form = LoginForm()
 
     return render(request, 'login.html', {'form': form})
+
 
 def logout_view(request):
     logout(request)
@@ -64,6 +66,30 @@ class InventoryCardListView(ListView):
         context['completeness_sign_choices'] = InventoryCard.COMPLETENESS_CHOICES
         return context
 
+from django.views.generic.edit import CreateView, UpdateView, DeleteView
+from django.urls import reverse_lazy
+from .models import InventoryCard
+
+class InventoryCardUpdateView(UpdateView):
+    model = InventoryCard
+    template_name = 'add_del/inventory_card_form.html'
+    fields = [
+        'equipment_code', 
+        'completeness_sign', 
+        'category_code', 
+        'initial_cost', 
+        'total_depreciation_amount', 
+        'release_date', 
+        'commissioning_date', 
+        'department_code', 
+        'employee_code'
+    ]
+    success_url = reverse_lazy('inventory_card_list')
+
+class InventoryCardDeleteView(DeleteView):
+    model = InventoryCard
+    template_name = 'add_del/inventory_card_confirm_delete.html'
+    success_url = reverse_lazy('inventory_card_list')
 
 # Представление для Department
 class DepartmentListView(ListView):
@@ -83,6 +109,31 @@ class DepartmentListView(ListView):
         context['department_choices'] = Department.objects.values_list('department_code', flat=True).distinct()
         return context
 
+from django.views.generic.edit import UpdateView, DeleteView
+from django.urls import reverse_lazy
+
+class DepartmentUpdateView(UpdateView):
+    model = Department
+    template_name = 'add_del/department_edit.html'
+    fields = ['name', 'manager_code']
+    success_url = reverse_lazy('department_list')  # Перенаправление после редактирования
+
+class DepartmentDeleteView(DeleteView):
+    model = Department
+    template_name = 'add_del/department_confirm_delete.html'
+    success_url = reverse_lazy('department_list')  # Перенаправление после удаления
+
+
+from django.urls import reverse_lazy
+from django.views.generic.edit import CreateView
+from .models import Completeness
+
+class CompletenessCreateView(CreateView):
+    model = Completeness
+    template_name = 'add_del/completeness_add.html'
+    fields = ['card_number', 'name', 'quantity', 'note']
+    success_url = reverse_lazy('completeness_list')
+
 
 # Представление для других моделей (по аналогии)
 class CompletenessListView(ListView):
@@ -90,11 +141,75 @@ class CompletenessListView(ListView):
     template_name = 'model/completeness_list.html'
     context_object_name = 'completeness'
 
+    def get_queryset(self):
+        queryset = super().get_queryset()
+
+        # Фильтрация по наименованию
+        name_filter = self.request.GET.get('name', None)
+        if name_filter:
+            queryset = queryset.filter(name=name_filter)
+
+        return queryset
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['name_choices'] = Completeness.objects.values_list('name', flat=True).distinct()
+        return context
+
+from django.views.generic.edit import UpdateView, DeleteView
+from django.urls import reverse_lazy
+
+class CompletenessUpdateView(UpdateView):
+    model = Completeness
+    template_name = 'add_del/completeness_edit.html'
+    fields = ['name', 'quantity', 'note']
+    success_url = reverse_lazy('completeness_list')  # Перенаправление после редактирования
+
+class CompletenessDeleteView(DeleteView):
+    model = Completeness
+    template_name = 'add_del/completeness_confirm_delete.html'
+    success_url = reverse_lazy('completeness_list')  # Перенаправление после удаления
+
 
 class AccrualListView(ListView):
     model = Accrual
     template_name = 'model/accrual_list.html'
     context_object_name = 'accruals'
+
+    def get_queryset(self):
+        queryset = super().get_queryset()
+
+        # Фильтр по месяцу
+        month = self.request.GET.get('month')
+        if month:
+            queryset = queryset.filter(month=month)
+
+        # Фильтр по году
+        year = self.request.GET.get('year')
+        if year:
+            queryset = queryset.filter(year=year)
+
+        return queryset
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['month_choices'] = Accrual.MONTH_CHOICES
+        return context
+
+
+from django.urls import reverse_lazy
+from django.views.generic.edit import UpdateView, DeleteView
+
+class AccrualUpdateView(UpdateView):
+    model = Accrual
+    template_name = 'add_del/accrual_edit.html'
+    fields = ['card_number', 'amount', 'month', 'year']
+    success_url = reverse_lazy('accrual_list')
+
+class AccrualDeleteView(DeleteView):
+    model = Accrual
+    template_name = 'add_del/accrual_confirm_delete.html'
+    success_url = reverse_lazy('accrual_list')
 
 
 class EquipmentListView(ListView):
@@ -102,11 +217,61 @@ class EquipmentListView(ListView):
     template_name = 'model/equipment_list.html'
     context_object_name = 'equipment'
 
+from django.urls import reverse_lazy
+from django.views.generic.edit import UpdateView, DeleteView
+
+class EquipmentUpdateView(UpdateView):
+    model = Equipment
+    template_name = 'add_del/equipment_edit.html'
+    fields = ['name']
+    success_url = reverse_lazy('equipment_list')
+
+class EquipmentDeleteView(DeleteView):
+    model = Equipment
+    template_name = 'add_del/equipment_confirm_delete.html'
+    success_url = reverse_lazy('equipment_list')
+
+
+from django.views.generic.edit import CreateView
+from django.urls import reverse_lazy
+from .models import Equipment
+
+class EquipmentCreateView(CreateView):
+    model = Equipment
+    template_name = 'add_del/equipment_form.html'
+    fields = ['name']
+    success_url = reverse_lazy('equipment_list')
+
 
 class EquipmentCategoryListView(ListView):
     model = EquipmentCategory
     template_name = 'model/equipment_category_list.html'
     context_object_name = 'equipment_categories'
+
+from django.urls import reverse_lazy
+from django.views.generic.edit import UpdateView, DeleteView
+
+class EquipmentCategoryUpdateView(UpdateView):
+    model = EquipmentCategory
+    template_name = 'add_del/equipment_category_edit.html'
+    fields = ['name', 'depreciation_rate']
+    success_url = reverse_lazy('equipment_category_list')
+
+class EquipmentCategoryDeleteView(DeleteView):
+    model = EquipmentCategory
+    template_name = 'add_del/equipment_category_confirm_delete.html'
+    success_url = reverse_lazy('equipment_category_list')
+
+
+from django.views.generic.edit import CreateView
+from django.urls import reverse_lazy
+from .models import EquipmentCategory
+
+class EquipmentCategoryCreateView(CreateView):
+    model = EquipmentCategory
+    template_name = 'add_del/equipment_category_form.html'
+    fields = ['name', 'depreciation_rate']
+    success_url = reverse_lazy('equipment_category_list')
 
 
 class EmployeeListView(ListView):
@@ -114,9 +279,62 @@ class EmployeeListView(ListView):
     template_name = 'model/employee_list.html'
     context_object_name = 'employees'
 
+from django.urls import reverse_lazy
+from django.views.generic.edit import UpdateView, DeleteView
+
+class EmployeeUpdateView(UpdateView):
+    model = Employee
+    template_name = 'add_del/employee_edit.html'
+    fields = ['full_name', 'department_code']
+    success_url = reverse_lazy('employee_list')
+
+class EmployeeDeleteView(DeleteView):
+    model = Employee
+    template_name = 'add_del/employee_confirm_delete.html'
+    success_url = reverse_lazy('employee_list')
+
+
+from django.views.generic.edit import CreateView
+from django.urls import reverse_lazy
+from .models import Employee
+
+class EmployeeCreateView(CreateView):
+    model = Employee
+    template_name = 'add_del/employee_form.html'
+    fields = ['full_name', 'department_code']
+    success_url = reverse_lazy('employee_list')
 
 
 #  Удаление и добавление
+from django.urls import reverse_lazy
+from django.views.generic.edit import CreateView
+from .models import InventoryCard
+
+from .forms import InventoryCardForm
+
+class InventoryCardCreateView(CreateView):
+    model = InventoryCard
+    template_name = 'add_del/inventory_card_form.html'
+    form_class = InventoryCardForm
+    success_url = reverse_lazy('inventory_card_list')
+ # URL перенаправления после успешного добавления
+
+from django.urls import reverse_lazy
+from django.views.generic.edit import CreateView
+from .models import Department
+
+class DepartmentCreateView(CreateView):
+    model = Department
+    template_name = 'add_del/department_form.html'
+    fields = ['name', 'manager_code']  # Поля, которые пользователь заполняет
+    success_url = reverse_lazy('department_list')  # Перенаправление после добавления
+
+class AccrualCreateView(CreateView):
+    model = Accrual
+    template_name = 'add_del/accrual_form.html'
+    fields = ['card_number', 'amount', 'month', 'year']
+    success_url = reverse_lazy('accrual_list')
+
 # from django.views.generic.edit import CreateView, DeleteView
 # from django.urls import reverse_lazy
 

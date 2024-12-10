@@ -1,9 +1,7 @@
 {% extends "base.html" %}
 
 {% block content %}
-<h1 class="text-center">
-    {% if object %}Редактировать{% else %}Добавить{% endif %} инвентарную карточку
-</h1>
+<h1 class="text-center">Редактировать подразделение</h1>
 
 <div class="container mt-4">
     <form method="post" class="form">
@@ -11,7 +9,7 @@
         {{ form.as_p }}
         <div class="d-flex justify-content-between mt-3">
             <button type="submit" class="btn btn-primary">Сохранить</button>
-            <a href="{% url 'inventory_card_list' %}" class="btn btn-secondary">Отмена</a>
+            <a href="{% url 'department_list' %}" class="btn btn-secondary">Отмена</a>
         </div>
     </form>
 </div>

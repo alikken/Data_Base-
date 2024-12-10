@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h1 class="text-center text-danger">Удалить комплектность</h1>
+
+<div class="container mt-4">
+    <p>Вы уверены, что хотите удалить запись с номером карточки "{{ object.card_number }}" и номером позиции "{{ object.position_number }}"?</p>
+    <form method="post" class="form">
+        {% csrf_token %}
+        <div class="d-flex justify-content-between mt-3">
+            <button type="submit" class="btn btn-danger">Удалить</button>
+            <a href="{% url 'completeness_list' %}" class="btn btn-secondary">Отмена</a>
+        </div>
+    </form>
+</div>
+{% endblock %}

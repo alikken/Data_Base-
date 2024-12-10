@@ -1,28 +1,56 @@
-{% comment %} {% extends "base.html" %} {% endcomment %}
+{% extends "base.html" %}
 
 {% block content %}
-<h1>Работники</h1>
+<h1 class="text-center">Работники</h1>
 
-<table class="table table-bordered">
-    <thead>
-        <tr>
-            <th>Код работника</th>
-            <th>ФИО</th>
-            <th>Код подразделения</th>
-        </tr>
-    </thead>
-    <tbody>
-        {% for emp in employees %}
-        <tr>
-            <td>{{ emp.employee_code }}</td>
-            <td>{{ emp.full_name }}</td>
-            <td>{{ emp.department_code }}</td>
-        </tr>
-        {% empty %}
-        <tr>
-            <td colspan="3">Нет данных для отображения</td>
-        </tr>
-        {% endfor %}
-    </tbody>
-</table>
+<div class="table-responsive">
+    <table class="table table-striped table-hover">
+        <thead class="table-dark">
+            <tr>
+                <th scope="col">Код работника</th>
+                <th scope="col">ФИО</th>
+                <th scope="col">Код подразделения</th>
+                <th scope="col">Действия</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for emp in employees %}
+            <tr>
+                <td>{{ emp.employee_code }}</td>
+                <td>{{ emp.full_name }}</td>
+                <td>{{ emp.department_code }}</td>
+                <td>
+                    <div class="d-flex justify-content-center">
+                        <a href="{% url 'employee_edit' emp.pk %}" class="btn btn-sm btn-warning me-2">Редактировать</a>
+                        <a href="{% url 'employee_confirm_delete' emp.pk %}" class="btn btn-sm btn-danger">Удалить</a>
+                    </div>
+                </td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="4" class="text-center">Нет данных для отображения</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+<div class="d-flex justify-content-end mb-3">
+    <a href="{% url 'employee_add' %}" class="btn btn-sm btn-light">Добавить</a>
+</div>
+<style>
+    .table {
+        border: 1px solid #ddd;
+    }
+    .table th, .table td {
+        text-align: center;
+        vertical-align: middle;
+    }
+    .table-hover tbody tr:hover {
+        background-color: #f8f9fa;
+    }
+    .btn-light {
+        color: #000;
+        border: 1px solid #ddd;
+    }
+</style>
 {% endblock %}

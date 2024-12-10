@@ -1,46 +1,58 @@
-{% comment %} {% extends "base.html" %} {% endcomment %}
+{% extends "base.html" %}
 
 {% block content %}
-<h1>Фильтр инвентарных карточек</h1>
+<h1 class="text-center">Инвентарные карточки</h1>
 
-<form method="get" class="form-inline">
-    <!-- Фильтр по комплектности -->
-    <label for="completeness_sign">Признак комплектности:</label>
-    <select name="completeness_sign" id="completeness_sign" class="form-control">
-        <option value="">Все</option>
-        {% for value, label in completeness_sign_choices %}
-        <option value="{{ value }}" {% if request.GET.completeness_sign == value %}selected{% endif %}>{{ label }}</option>
-        {% endfor %}
-    </select>
+<form method="get" class="mb-4">
+    <div class="row g-3">
+        <!-- Фильтр по комплектности -->
+        <div class="col-md-3">
+            <label for="completeness_sign" class="form-label">Признак комплектности:</label>
+            <select name="completeness_sign" id="completeness_sign" class="form-select">
+                <option value="">Все</option>
+                {% for value, label in completeness_sign_choices %}
+                <option value="{{ value }}" {% if request.GET.completeness_sign == value %}selected{% endif %}>
+                    {{ label }}
+                </option>
+                {% endfor %}
+            </select>
+        </div>
 
-    <!-- Фильтр по дате ввода в эксплуатацию -->
-    <label for="start_date">Дата ввода (от):</label>
-    <input type="date" name="start_date" id="start_date" class="form-control"
-           value="{{ request.GET.start_date }}">
+        <!-- Фильтр по дате -->
+        <div class="col-md-3">
+            <label for="start_date" class="form-label">Дата ввода (от):</label>
+            <input type="date" name="start_date" id="start_date" class="form-control"
+                   value="{{ request.GET.start_date }}">
+        </div>
+        <div class="col-md-3">
+            <label for="end_date" class="form-label">Дата ввода (до):</label>
+            <input type="date" name="end_date" id="end_date" class="form-control"
+                   value="{{ request.GET.end_date }}">
+        </div>
 
-    <label for="end_date">Дата ввода (до):</label>
-    <input type="date" name="end_date" id="end_date" class="form-control"
-           value="{{ request.GET.end_date }}">
-    <br>
-    <button type="submit" class="btn btn-primary">Применить фильтр</button>
+        <!-- Кнопки -->
+        <div class="col-md-3 d-flex align-items-end">
+            <button type="submit" class="btn btn-primary me-2">Применить фильтр</button>
+            <a href="{% url 'inventory_card_list' %}" class="btn btn-secondary">Сбросить фильтр</a>
+        </div>
+    </div>
 </form>
 
-{% comment %} <h2>Инвентарные карточки</h2><a href="{% url 'inventory_card_add' %}" class="btn btn-success mb-3">Добавить карточку</a> {% endcomment %}
 <div class="table-responsive">
-    <table class="table table-bordered">
-        <thead>
+    <table class="table table-striped table-hover">
+        <thead class="table-dark">
             <tr>
-                <th>Номер карточки</th>
-                <th>Код оборудования</th>
-                <th>Признак комплектности</th>
-                <th>Код категории оборудования</th>
-                <th>Первоначальная стоимость</th>
-                <th>Общая сумма амортизаций</th>
-                <th>Дата выпуска оборудования</th>
-                <th>Дата ввода в эксплуатацию</th>
-                <th>Код подразделения</th>
-                <th>Код работника</th>
-                <th>Действия</th>
+                <th scope="col">Номер карточки</th>
+                <th scope="col">Код оборудования</th>
+                <th scope="col">Признак комплектности</th>
+                <th scope="col">Код категории</th>
+                <th scope="col">Стоимость</th>
+                <th scope="col">Амортизация</th>
+                <th scope="col">Дата выпуска</th>
+                <th scope="col">Дата ввода</th>
+                <th scope="col">Подразделение</th>
+                <th scope="col">Работник</th>
+                <th scope="col">Действия</th>
             </tr>
         </thead>
         <tbody>
@@ -57,31 +69,47 @@
                 <td>{{ card.department_code }}</td>
                 <td>{{ card.employee_code }}</td>
                 <td>
-                    {% comment %} <a href="{% url 'inventory_card_delete' card.pk %}" class="btn btn-danger btn-sm">Удалить</a> {% endcomment %}
+                    <div class="d-flex justify-content-between">
+                        <a href="{% url 'inventory_card_edit' card.pk %}" class="btn btn-sm btn-warning me-2">Редактировать</a>
+                        <a href="{% url 'inventory_card_delete' card.pk %}" class="btn btn-sm btn-danger">Удалить</a>
+                    </div>
                 </td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="11" class="text-center">Нет данных для отображения</td>
             </tr>
             {% endfor %}
         </tbody>
     </table>
 </div>
+
+<div class="d-flex justify-content-end mt-3">
+    <a href="{% url 'inventory_card_add' %}" class="btn btn-sm btn-light">Добавить</a>
+</div>
+
 <style>
-    table {
-        width: 100%;
-        table-layout: fixed;
+    .table {
+        border: 1px solid #ddd;
     }
-    
-    th, td {
-        word-wrap: break-word;
+    .table th, .table td {
+        text-align: center;
+        vertical-align: middle;
     }
-    
-    @media (max-width: 768px) {
-        table {
-            font-size: 12px;
-        }
-        th, td {
-            padding: 5px;
-        }
+    .table-hover tbody tr:hover {
+        background-color: #f8f9fa;
     }
-    
+    .btn-light {
+        color: #000;
+        border: 1px solid #ddd;
+    }
+
+    .d-flex .btn {
+        margin-right: 5px; /* Отступ между кнопками */
+    }
+
+    .d-flex .btn:last-child {
+        margin-right: 0; /* Убираем отступ у последней кнопки */
+    }
 </style>
 {% endblock %}

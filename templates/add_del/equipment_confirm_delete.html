@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h1 class="text-center">Удалить оборудование</h1>
+
+<p>Вы уверены, что хотите удалить это оборудование?</p>
+<ul>
+    <li>Код оборудования: {{ object.equipment_code }}</li>
+    <li>Наименование: {{ object.name }}</li>
+</ul>
+
+<form method="post" class="form">
+    {% csrf_token %}
+    <button type="submit" class="btn btn-danger">Удалить</button>
+    <a href="{% url 'equipment_list' %}" class="btn btn-secondary">Отмена</a>
+</form>
+{% endblock %}
