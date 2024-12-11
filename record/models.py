@@ -208,7 +208,7 @@ class Completeness(models.Model):
         verbose_name = "Комплектность"
         verbose_name_plural = "Комплектности"
         db_table = "completeness"
-        unique_together = ("position_number",)
+        unique_together = ("card_number", "position_number",)
 
     def save(self, *args, **kwargs):
         if not self.position_number:
