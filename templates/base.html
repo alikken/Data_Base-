@@ -34,39 +34,29 @@
     </div>
 
     <h4 class="text-center mb-4">Запросы</h4>
-
     <div class="nav flex-column">
-      <a href="{% url 'inventory_card_list' %}" class="btn btn-outline-primary mb-2 w-100">Инвентарная карточка</a>
-      <a href="{% url 'completeness_list' %}" class="btn btn-outline-primary mb-2 w-100">Комплектность</a>
-      <a href="{% url 'department_list' %}" class="btn btn-outline-primary mb-2 w-100">Подразделения</a>
-      <a href="{% url 'accrual_list' %}" class="btn btn-outline-primary mb-2 w-100">Начисления</a>
-      <a href="{% url 'equipment_list' %}" class="btn btn-outline-primary mb-2 w-100">Оборудование</a>
-      <a href="{% url 'equipment_category_list' %}" class="btn btn-outline-primary mb-2 w-100">Категории оборудования</a>
-      <a href="{% url 'employee_list' %}" class="btn btn-outline-primary mb-2 w-100">Работники</a>
-  </div>
-
-  <h4 class="text-center mb-4">Отчеты</h4>
-
+      <a href="{% url 'current_year_cost_by_department' %}" class="btn btn-outline-primary mb-2 w-100">Первоначальная стоимость по участкам</a>
+      <a href="{% url 'current_year_completeness_count' %}" class="btn btn-outline-primary mb-2 w-100">Количество комплектных изделий</a>
+      <a href="{% url 'equipment_containing_tol' %}" class="btn btn-outline-primary mb-2 w-100">Оборудование с "тол"</a>
+      <a href="{% url 'equipment_in_range' %}" class="btn btn-outline-primary mb-2 w-100">Оборудование по диапазону</a>
+      <a href="{% url 'depreciation_sum' %}" class="btn btn-outline-primary mb-2 w-100">Сумма амортизаций</a>
+    </div>
+    
+    <h4 class="text-center mb-4">Отчеты</h4>
     <div class="nav flex-column">
-      <a href="{% url 'inventory_card_list' %}" class="btn btn-outline-primary mb-2 w-100">Инвентарная карточка</a>
-      <a href="{% url 'completeness_list' %}" class="btn btn-outline-primary mb-2 w-100">Комплектность</a>
-      <a href="{% url 'department_list' %}" class="btn btn-outline-primary mb-2 w-100">Подразделения</a>
-      <a href="{% url 'accrual_list' %}" class="btn btn-outline-primary mb-2 w-100">Начисления</a>
-      <a href="{% url 'equipment_list' %}" class="btn btn-outline-primary mb-2 w-100">Оборудование</a>
-      <a href="{% url 'equipment_category_list' %}" class="btn btn-outline-primary mb-2 w-100">Категории оборудования</a>
-      <a href="{% url 'employee_list' %}" class="btn btn-outline-primary mb-2 w-100">Работники</a>
-  </div>
-  <h4 class="text-center mb-4">Процедуры</h4>
-
+      <a href="{% url 'inventory_card_report' %}" class="btn btn-outline-primary mb-2 w-100">Инвентарная карточка (отчет)</a>
+      <a href="{% url 'equipment_writeoff_report' %}" class="btn btn-outline-primary mb-2 w-100">Списываемое оборудование</a>
+      <a href="{% url 'equipment_by_employee_report' %}" class="btn btn-outline-primary mb-2 w-100">Оборудование по сотруднику</a>
+    </div>
+    
+    <h4 class="text-center mb-4">Процедуры</h4>
     <div class="nav flex-column">
-      <a href="{% url 'inventory_card_list' %}" class="btn btn-outline-primary mb-2 w-100">Инвентарная карточка</a>
-      <a href="{% url 'completeness_list' %}" class="btn btn-outline-primary mb-2 w-100">Комплектность</a>
-      <a href="{% url 'department_list' %}" class="btn btn-outline-primary mb-2 w-100">Подразделения</a>
-      <a href="{% url 'accrual_list' %}" class="btn btn-outline-primary mb-2 w-100">Начисления</a>
-      <a href="{% url 'equipment_list' %}" class="btn btn-outline-primary mb-2 w-100">Оборудование</a>
-      <a href="{% url 'equipment_category_list' %}" class="btn btn-outline-primary mb-2 w-100">Категории оборудования</a>
-      <a href="{% url 'employee_list' %}" class="btn btn-outline-primary mb-2 w-100">Работники</a>
-  </div>
+      <a href="{% url 'mismatched_years' %}" class="btn btn-outline-primary mb-2 w-100">Несоответствие годов выпуска и ввода</a>
+      <a href="{% url 'inventory_by_category' %}" class="btn btn-outline-primary mb-2 w-100">Оборудование по категории</a>
+      <a href="{% url 'insert_employees' %}" class="btn btn-outline-primary mb-2 w-100">Добавить сотрудников</a>
+      <a href="{% url 'equipment_downtime' %}" class="btn btn-outline-primary mb-2 w-100">Простой оборудования</a>
+    </div>
+    
   </div>
 
 

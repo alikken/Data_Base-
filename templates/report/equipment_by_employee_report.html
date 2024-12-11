@@ -1,0 +1,50 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h1 class="text-center">Список оборудования, закрепленного за сотрудником</h1>
+
+<form method="get" class="mb-4">
+    <label for="employee_id" class="form-label">Выберите сотрудника:</label>
+    <select name="employee_id" id="employee_id" class="form-select">
+        <option value="">-- Выберите сотрудника --</option>
+        {% for emp in employees %}
+        <option value="{{ emp.employee_code }}" {% if employee and employee.employee_code == emp.employee_code %}selected{% endif %}>
+            {{ emp.full_name }}
+        </option>
+        {% endfor %}
+    </select>
+    <button type="submit" class="btn btn-primary mt-2">Показать отчет</button>
+</form>
+
+{% if employee %}
+<h3>Сотрудник: {{ employee.full_name }}</h3>
+<div class="table-responsive mt-3">
+    <table class="table table-striped table-hover">
+        <thead class="table-dark">
+            <tr>
+                <th scope="col">Номер карточки</th>
+                <th scope="col">Код оборудования</th>
+                <th scope="col">Дата ввода в эксплуатацию</th>
+                <th scope="col">Подразделение</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for eq in equipment_list %}
+            <tr>
+                <td>{{ eq.card_number }}</td>
+                <td>{{ eq.equipment_code }}</td>
+                <td>{{ eq.commissioning_date }}</td>
+                <td>{{ eq.department_code }}</td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="4" class="text-center">Нет оборудования</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+<a href="?employee_id={{ employee.employee_code }}&pdf" class="btn btn-sm btn-success mt-3">Скачать PDF</a>
+{% endif %}
+{% endblock %}

@@ -3,7 +3,7 @@ from django.conf import settings
 from django.conf.urls.static import static
 from django.contrib.staticfiles.urls import staticfiles_urlpatterns
 
-from .views import AccrualCreateView, AccrualDeleteView, AccrualListView, AccrualUpdateView, CompletenessCreateView, CompletenessDeleteView, CompletenessListView, CompletenessUpdateView, CurrentYearCompletenessCountView, CurrentYearCostByDepartmentView, DepartmentCreateView, DepartmentDeleteView, DepartmentListView, DepartmentUpdateView, DepreciationSumView, EmployeeCreateView, EmployeeDeleteView, EmployeeListView, EmployeeUpdateView, EquipmentCategoryCreateView, EquipmentCategoryDeleteView, EquipmentCategoryListView, EquipmentCategoryUpdateView, EquipmentContainingTolView, EquipmentCreateView, EquipmentDeleteView, EquipmentInRangeView, EquipmentListView, EquipmentUpdateView, InventoryCardCreateView, InventoryCardDeleteView,  InventoryCardListView, InventoryCardUpdateView, login_view, logout_view
+from .views import AccrualCreateView, AccrualDeleteView, AccrualListView, AccrualUpdateView, CompletenessCreateView, CompletenessDeleteView, CompletenessListView, CompletenessUpdateView, CurrentYearCompletenessCountView, CurrentYearCostByDepartmentView, DepartmentCreateView, DepartmentDeleteView, DepartmentListView, DepartmentUpdateView, DepreciationSumView, EmployeeCreateView, EmployeeDeleteView, EmployeeListView, EmployeeUpdateView, EquipmentCategoryCreateView, EquipmentCategoryDeleteView, EquipmentCategoryListView, EquipmentCategoryUpdateView, EquipmentContainingTolView, EquipmentCreateView, EquipmentDeleteView, EquipmentInRangeView, EquipmentListView, EquipmentUpdateView, InventoryCardCreateView, InventoryCardDeleteView,  InventoryCardListView, InventoryCardUpdateView, equipment_by_employee_report, equipment_downtime_view, equipment_writeoff_report, insert_employees_procedure, inventory_by_category, inventory_card_report, login_view, logout_view, mismatched_years_view
 urlpatterns = [
     path('', login_view, name='login'),
     path('logout/', logout_view, name='logout'),
@@ -45,7 +45,15 @@ urlpatterns = [
     path('equipment/in-range/', EquipmentInRangeView.as_view(), name='equipment_in_range'),
     path('depreciation-sum/', DepreciationSumView.as_view(), name='depreciation_sum'),
 
+    path('report/inventory-card/', inventory_card_report, name='inventory_card_report'),
+    path('report/equipment-writeoff-report/', equipment_writeoff_report, name='equipment_writeoff_report'),
+    path('report/equipment-by-employee/', equipment_by_employee_report, name='equipment_by_employee_report'),
 
+
+    path('procedure/mismatched-years/', mismatched_years_view, name='mismatched_years'),
+    path('procedure/inventory-by-category/', inventory_by_category, name='inventory_by_category'),
+    path('procedure/insert-employees/', insert_employees_procedure, name='insert_employees'),
+    path('procedure/downtime/', equipment_downtime_view, name='equipment_downtime'),
 ]
 
 

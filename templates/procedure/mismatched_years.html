@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h1 class="text-center">Строки с несоответствием года выпуска и ввода в эксплуатацию</h1>
+
+<div class="table-responsive">
+    <table class="table table-striped table-hover">
+        <thead class="table-dark">
+            <tr>
+                <th scope="col">Номер карточки</th>
+                <th scope="col">Код оборудования</th>
+                <th scope="col">Дата выпуска</th>
+                <th scope="col">Дата ввода в эксплуатацию</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for row in rows %}
+            <tr>
+                <td>{{ row.0 }}</td>
+                <td>{{ row.1 }}</td>
+                <td>{{ row.2 }}</td>
+                <td>{{ row.3 }}</td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="4" class="text-center">Нет данных для отображения</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

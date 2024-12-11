@@ -457,65 +457,206 @@ class DepreciationSumView(TemplateView):
 
 # Отчеты
 
-# from django.shortcuts import render
-# from django.http import HttpResponse
-# from django.template.loader import render_to_string
-# import pdfkit
-# from .models import InventoryCard
-# from django.db.models import Q
-# import pdfkit
+from django.shortcuts import render
+from django.http import HttpResponse
+from django.template.loader import render_to_string
+from .models import InventoryCard
+from django.db.models import Q
+import pdfkit
+from datetime import datetime
 
-# import pdfkit
-# from datetime import datetime
+def inventory_card_report(request):
+    start_date = request.GET.get('start_date')
+    end_date = request.GET.get('end_date')
 
-# def inventory_card_report(request):
-#     start_date = request.GET.get('start_date')
-#     end_date = request.GET.get('end_date')
-    
-#     # Базовый QuerySet
-#     inventory_cards = InventoryCard.objects.all()
+    # Базовый QuerySet
+    inventory_cards = InventoryCard.objects.all()
 
-#     # Применение фильтрации только если даты заданы корректно
-#     if start_date or end_date:
-#         try:
-#             if start_date:
-#                 # Преобразование строки в объект даты для проверки формата
-#                 start_date = datetime.strptime(start_date, "%Y-%m-%d").date()
-#             if end_date:
-#                 # Преобразование строки в объект даты для проверки формата
-#                 end_date = datetime.strptime(end_date, "%Y-%m-%d").date()
+    # Применение фильтрации по диапазону дат
+    if start_date or end_date:
+        try:
+            if start_date:
+                start_date = datetime.strptime(start_date, "%Y-%m-%d").date()
+            if end_date:
+                end_date = datetime.strptime(end_date, "%Y-%m-%d").date()
 
-#             # Применение фильтров
-#             if start_date and end_date:
-#                 inventory_cards = inventory_cards.filter(
-#                     Q(commissioning_date__gte=start_date) & Q(commissioning_date__lte=end_date)
-#                 )
-#             elif start_date:
-#                 inventory_cards = inventory_cards.filter(commissioning_date__gte=start_date)
-#             elif end_date:
-#                 inventory_cards = inventory_cards.filter(commissioning_date__lte=end_date)
+            if start_date and end_date:
+                inventory_cards = inventory_cards.filter(
+                    Q(commissioning_date__gte=start_date) & Q(commissioning_date__lte=end_date)
+                )
+            elif start_date:
+                inventory_cards = inventory_cards.filter(commissioning_date__gte=start_date)
+            elif end_date:
+                inventory_cards = inventory_cards.filter(commissioning_date__lte=end_date)
 
-#         except ValueError:
-#             # Если формат даты неверный, пропускаем фильтрацию
-#             pass
+        except ValueError:
+            pass  # Пропускаем фильтрацию, если даты некорректны
 
-#     context = {
-#         'inventory_cards': inventory_cards,
-#         'start_date': start_date,
-#         'end_date': end_date,
-#     }
+    context = {
+        'inventory_cards': inventory_cards,
+        'start_date': start_date,
+        'end_date': end_date,
+    }
 
-#     if 'pdf' in request.GET:  # Если нужно сгенерировать PDF
-#         html = render_to_string('report/inventory_card_report_pdf.html', context)
-#         # Укажите путь к wkhtmltopdf
-#         config = pdfkit.configuration(wkhtmltopdf='D:/Python_project/Coursework_bd/wkhtmltox/bin/wkhtmltopdf.exe')  # Укажите правильный путь
-#         pdf = pdfkit.from_string(html, False, configuration=config, options={
-#             'page-size': 'A4',
-#             'encoding': "UTF-8",
-#         })
-#         response = HttpResponse(pdf, content_type='application/pdf')
-#         response['Content-Disposition'] = 'attachment; filename="inventory_card_report.pdf"'
-#         return response
+    if 'pdf' in request.GET:  # Генерация PDF
+        html = render_to_string('report/inventory_card_report_pdf.html', context)
+        config = pdfkit.configuration(wkhtmltopdf='D:/Python_project/Coursework_bd/wkhtmltox/bin/wkhtmltopdf.exe')
+        pdf = pdfkit.from_string(html, False, configuration=config, options={
+            'page-size': 'A4',
+            'encoding': "UTF-8",
+        })
+        response = HttpResponse(pdf, content_type='application/pdf')
+        response['Content-Disposition'] = 'attachment; filename="inventory_card_report.pdf"'
+        return response
 
-#     return render(request, 'report/inventory_card_report.html', context)
+    return render(request, 'report/inventory_card_report.html', context)
 
+
+from django.shortcuts import render
+from django.http import HttpResponse
+from django.template.loader import render_to_string
+import pdfkit
+from .models import InventoryCard
+from django.db.models import F
+
+
+def equipment_writeoff_report(request):
+    # Выбираем оборудование, подлежащее списанию
+    writeoff_equipment = InventoryCard.objects.filter(
+        initial_cost=F('total_depreciation_amount')
+    )
+
+    context = {
+        'writeoff_equipment': writeoff_equipment,
+    }
+
+    if 'pdf' in request.GET:  # Генерация PDF
+        html = render_to_string('report/equipment_writeoff_report_pdf.html', context)
+        config = pdfkit.configuration(wkhtmltopdf='D:/Python_project/Coursework_bd/wkhtmltox/bin/wkhtmltopdf.exe')
+        pdf = pdfkit.from_string(html, False, configuration=config, options={
+            'page-size': 'A4',
+            'encoding': "UTF-8",
+        })
+        response = HttpResponse(pdf, content_type='application/pdf')
+        response['Content-Disposition'] = 'attachment; filename="equipment_writeoff_report.pdf"'
+        return response
+
+    return render(request, 'report/equipment_writeoff_report.html', context)
+
+
+from django.shortcuts import render
+from django.http import HttpResponse
+from django.template.loader import render_to_string
+import pdfkit
+from .models import InventoryCard, Employee
+
+
+def equipment_by_employee_report(request):
+    # Получаем ID сотрудника из GET-параметров
+    employee_id = request.GET.get('employee_id', None)
+
+    equipment_list = []
+    employee = None
+
+    if employee_id:
+        try:
+            # Находим сотрудника
+            employee = Employee.objects.get(pk=employee_id)
+            # Фильтруем оборудование, закрепленное за сотрудником
+            equipment_list = InventoryCard.objects.filter(employee_code=employee)
+        except Employee.DoesNotExist:
+            employee = None
+
+    context = {
+        'equipment_list': equipment_list,
+        'employee': employee,
+        'employees': Employee.objects.all(),  # Для выпадающего списка
+    }
+
+    if 'pdf' in request.GET:  # Генерация PDF
+        html = render_to_string('report/equipment_by_employee_report_pdf.html', context)
+        config = pdfkit.configuration(wkhtmltopdf='D:/Python_project/Coursework_bd/wkhtmltox/bin/wkhtmltopdf.exe')
+        pdf = pdfkit.from_string(html, False, configuration=config, options={
+            'page-size': 'A4',
+            'encoding': "UTF-8",
+        })
+        response = HttpResponse(pdf, content_type='application/pdf')
+        response['Content-Disposition'] = 'attachment; filename="equipment_by_employee_report.pdf"'
+        return response
+
+    return render(request, 'report/equipment_by_employee_report.html', context)
+
+
+# Процедуры
+from django.db import connection
+from django.shortcuts import render
+
+def mismatched_years_view(request):
+    # Вызов хранимой процедуры
+    with connection.cursor() as cursor:
+        cursor.execute("SELECT * FROM get_mismatched_years()")
+        rows = cursor.fetchall()
+
+    context = {
+        'rows': rows
+    }
+
+    return render(request, 'procedure/mismatched_years.html', context)
+
+
+
+
+
+from django.shortcuts import render
+from django.db import connection
+
+def inventory_by_category(request):
+    category_code = request.GET.get('category_code')  # Получаем параметр из запроса
+    inventory_list = []
+
+    if category_code:
+        with connection.cursor() as cursor:
+            cursor.execute("SELECT * FROM get_inventory_by_category(%s)", [category_code])
+            columns = [col[0] for col in cursor.description]
+            inventory_list = [dict(zip(columns, row)) for row in cursor.fetchall()]
+
+    return render(request, 'procedure/inventory_by_category.html', {
+        'inventory_list': inventory_list,
+        'category_code': category_code,
+    })
+
+
+
+from django.shortcuts import render
+from django.db import connection
+
+def insert_employees_procedure(request):
+    with connection.cursor() as cursor:
+        cursor.callproc('insert_employees')  # Вызов хранимой процедуры
+    return render(request, 'procedure/insert_employees.html', {})
+
+
+from django.shortcuts import render
+from django.db import connection
+from .models import InventoryCard
+
+def equipment_downtime_view(request):
+    card_number_param = request.GET.get('card_number', None)
+    downtime_data = []
+
+    if card_number_param:
+        with connection.cursor() as cursor:
+            cursor.execute("""
+                SELECT card_number, equipment_code_id, release_date, commissioning_date, downtime_interval
+                FROM calculate_equipment_downtime(%s)
+            """, [card_number_param])
+            downtime_data = cursor.fetchall()
+
+    # Получение всех номеров карточек для выпадающего списка
+    card_choices = InventoryCard.objects.values_list('card_number', flat=True)
+
+    return render(request, 'procedure/equipment_downtime.html', {
+        'downtime_data': downtime_data,
+        'card_number_param': card_number_param,
+        'card_choices': card_choices,
+    })
