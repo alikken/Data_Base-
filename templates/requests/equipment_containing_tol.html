@@ -1,0 +1,43 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h1 class="text-center">Список оборудования с названием, содержащим "тол"</h1>
+
+<div class="table-responsive mt-4">
+    <table class="table table-striped table-hover">
+        <thead class="table-dark">
+            <tr>
+                <th scope="col">Код оборудования</th>
+                <th scope="col">Наименование</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for equipment in equipment_list %}
+            <tr>
+                <td>{{ equipment.equipment_code }}</td>
+                <td>{{ equipment.name }}</td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="2" class="text-center">Нет данных для отображения</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+<a href="{% url 'equipment_list' %}" class="btn btn-secondary mt-3">Вернуться к списку оборудования</a>
+
+<style>
+    .table {
+        border: 1px solid #ddd;
+    }
+    .table th, .table td {
+        text-align: center;
+        vertical-align: middle;
+    }
+    .table-hover tbody tr:hover {
+        background-color: #f8f9fa;
+    }
+</style>
+{% endblock %}

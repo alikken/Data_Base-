@@ -3,7 +3,7 @@ from django.conf import settings
 from django.conf.urls.static import static
 from django.contrib.staticfiles.urls import staticfiles_urlpatterns
 
-from .views import AccrualCreateView, AccrualDeleteView, AccrualListView, AccrualUpdateView, CompletenessCreateView, CompletenessDeleteView, CompletenessListView, CompletenessUpdateView, DepartmentCreateView, DepartmentDeleteView, DepartmentListView, DepartmentUpdateView, EmployeeCreateView, EmployeeDeleteView, EmployeeListView, EmployeeUpdateView, EquipmentCategoryCreateView, EquipmentCategoryDeleteView, EquipmentCategoryListView, EquipmentCategoryUpdateView, EquipmentCreateView, EquipmentDeleteView, EquipmentListView, EquipmentUpdateView, InventoryCardCreateView, InventoryCardDeleteView,  InventoryCardListView, InventoryCardUpdateView, login_view, logout_view
+from .views import AccrualCreateView, AccrualDeleteView, AccrualListView, AccrualUpdateView, CompletenessCreateView, CompletenessDeleteView, CompletenessListView, CompletenessUpdateView, CurrentYearCompletenessCountView, CurrentYearCostByDepartmentView, DepartmentCreateView, DepartmentDeleteView, DepartmentListView, DepartmentUpdateView, DepreciationSumView, EmployeeCreateView, EmployeeDeleteView, EmployeeListView, EmployeeUpdateView, EquipmentCategoryCreateView, EquipmentCategoryDeleteView, EquipmentCategoryListView, EquipmentCategoryUpdateView, EquipmentContainingTolView, EquipmentCreateView, EquipmentDeleteView, EquipmentInRangeView, EquipmentListView, EquipmentUpdateView, InventoryCardCreateView, InventoryCardDeleteView,  InventoryCardListView, InventoryCardUpdateView, login_view, logout_view
 urlpatterns = [
     path('', login_view, name='login'),
     path('logout/', logout_view, name='logout'),
@@ -36,7 +36,16 @@ urlpatterns = [
     path('equipment-categories/add/', EquipmentCategoryCreateView.as_view(), name='equipment_category_add'),
     path('employees/add/', EmployeeCreateView.as_view(), name='employee_add'),
 
+
+
+    path('current-year-cost/', CurrentYearCostByDepartmentView.as_view(), name='current_year_cost_by_department'),
+    path('current-year-completeness/', CurrentYearCompletenessCountView.as_view(), name='current_year_completeness_count'),
     #  path('inventory-card-report/', inventory_card_report, name='inventory_card_report'),
+    path('equipment/containing-tol/', EquipmentContainingTolView.as_view(), name='equipment_containing_tol'),
+    path('equipment/in-range/', EquipmentInRangeView.as_view(), name='equipment_in_range'),
+    path('depreciation-sum/', DepreciationSumView.as_view(), name='depreciation_sum'),
+
+
 ]
 
 

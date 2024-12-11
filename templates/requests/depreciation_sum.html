@@ -1,0 +1,44 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h1 class="text-center">Сумма амортизационных отчислений</h1>
+
+<form method="get" class="mb-4">
+    <div class="row g-3">
+        <!-- Выбор месяца -->
+        <div class="col-md-6">
+            <label for="month" class="form-label">Выберите месяц:</label>
+            <select name="month" id="month" class="form-select">
+                {% for num, name in month_choices %}
+                <option value="{{ num }}" {% if num == selected_month %}selected{% endif %}>
+                    {{ name }}
+                </option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <!-- Кнопки -->
+        <div class="col-md-6 d-flex align-items-end">
+            <button type="submit" class="btn btn-primary me-2">Применить</button>
+            <a href="{% url 'depreciation_sum' %}" class="btn btn-secondary">Сбросить</a>
+        </div>
+    </div>
+</form>
+
+<div class="d-flex justify-content-center align-items-center mt-5">
+    <div class="text-center">
+        <h2>Сумма амортизационных отчислений за месяц:</h2>
+        <p class="display-4">{{ depreciation_sum }}</p>
+    </div>
+</div>
+
+<a href="{% url 'inventory_card_list' %}" class="btn btn-secondary mt-4">Вернуться назад</a>
+
+<style>
+    .display-4 {
+        font-size: 3rem;
+        font-weight: bold;
+        color: #007bff;
+    }
+</style>
+{% endblock %}

@@ -335,35 +335,123 @@ class AccrualCreateView(CreateView):
     fields = ['card_number', 'amount', 'month', 'year']
     success_url = reverse_lazy('accrual_list')
 
-# from django.views.generic.edit import CreateView, DeleteView
-# from django.urls import reverse_lazy
+# Запросы
 
-# class InventoryCardCreateView(CreateView):
-#     model = InventoryCard
-#     template_name = 'add_del/inventory_card_form.html'
-#     fields = [
-#         'card_number', 'equipment_code', 'completeness_sign',
-#         'category_code', 'initial_cost', 'total_depreciation_amount',
-#         'release_date', 'commissioning_date', 'department_code', 'employee_code'
-#     ]
-#     success_url = reverse_lazy('inventory_card_list')  # Перенаправление после успешного добавления
+from django.db.models import Sum
+from django.utils.timezone import now
+from django.views.generic import TemplateView
+from .models import InventoryCard, Department
 
-# class InventoryCardDeleteView(DeleteView):
-#     model = InventoryCard
-#     template_name = 'add_del/inventory_card_confirm_delete.html'
-#     success_url = reverse_lazy('inventory_card_list')  # Перенаправление после успешного удаления
+class CurrentYearCostByDepartmentView(TemplateView):
+    template_name = 'requests/current_year_cost_by_department.html'
 
-# class DepartmentCreateView(CreateView):
-#     model = Department
-#     template_name = 'add_del/department_form.html'
-#     fields = ['department_code', 'name', 'manager_code']  # Поля, которые пользователь может заполнить
-#     success_url = reverse_lazy('department_list')  # Перенаправление после успешного добавления
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        current_year = now().year
 
-# class DepartmentDeleteView(DeleteView):
-#     model = Department
-#     template_name = 'add_del/department_confirm_delete.html'
-#     success_url = reverse_lazy('department_list')  # Перенаправление после успешного удаления
+        # Группировка и суммирование первоначальной стоимости по участкам
+        data = (
+            InventoryCard.objects.filter(commissioning_date__year=current_year)
+            .values('department_code__name')  # Имя участка
+            .annotate(total_cost=Sum('initial_cost'))  # Сумма стоимости
+            .order_by('department_code__name')  # Сортировка по имени участка
+        )
 
+        context['data'] = data
+        context['current_year'] = current_year
+        return context
+
+from django.views.generic import TemplateView
+from django.utils.timezone import now
+from .models import InventoryCard
+
+class CurrentYearCompletenessCountView(TemplateView):
+    template_name = 'requests/current_year_completeness_count.html'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        current_year = now().year
+
+        # Получение комплектных изделий
+        inventory_cards = InventoryCard.objects.filter(
+            commissioning_date__year=current_year,
+            completeness_sign="Полная комплектация"
+        )
+
+        context['inventory_cards'] = inventory_cards
+        context['completeness_count'] = inventory_cards.count()
+        context['current_year'] = current_year
+        return context
+
+
+from django.views.generic import TemplateView
+from .models import Equipment
+
+class EquipmentContainingTolView(TemplateView):
+    template_name = 'requests/equipment_containing_tol.html'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        # Запрос оборудования с названием, содержащим "тол" (регистронезависимый поиск)
+        equipment_list = Equipment.objects.filter(name__icontains="тол")
+        context['equipment_list'] = equipment_list
+        return context
+
+from django.http import HttpResponseBadRequest
+
+class EquipmentInRangeView(TemplateView):
+    template_name = 'requests/equipment_in_range.html'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        equipment_list = InventoryCard.objects.all().order_by('card_number')
+
+        # Получаем уникальные значения номеров карточек для выпадающих списков
+        card_numbers = list(equipment_list.values_list('card_number', flat=True))
+
+        # Получаем выбранные диапазоны
+        start_range = self.request.GET.get('start_range', None)
+        end_range = self.request.GET.get('end_range', None)
+
+        # Проверка и фильтрация
+        if start_range and end_range:
+            if start_range > end_range:
+                context['error'] = "Начало диапазона не может быть больше конца."
+            else:
+                equipment_list = equipment_list.filter(
+                    card_number__gte=start_range,
+                    card_number__lte=end_range
+                )
+        else:
+            equipment_list = InventoryCard.objects.none()  # Пустой результат по умолчанию
+
+        context['equipment_list'] = equipment_list
+        context['card_numbers'] = card_numbers
+        context['start_range'] = start_range
+        context['end_range'] = end_range
+        return context
+
+from django.views.generic import TemplateView
+from django.db.models import Sum
+from datetime import datetime
+
+class DepreciationSumView(TemplateView):
+    template_name = 'requests/depreciation_sum.html'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+
+        # Получение текущего месяца
+        selected_month = self.request.GET.get('month', datetime.now().month)
+
+        # Сумма амортизационных отчислений за выбранный месяц
+        depreciation_sum = Accrual.objects.filter(month=selected_month).aggregate(total_sum=Sum('amount'))['total_sum']
+
+        context['depreciation_sum'] = depreciation_sum or 0
+        context['month_choices'] = Accrual.MONTH_CHOICES
+        context['selected_month'] = int(selected_month)
+        context['month_name'] = dict(Accrual.MONTH_CHOICES).get(int(selected_month), "неизвестный")
+        return context
 
 
 
